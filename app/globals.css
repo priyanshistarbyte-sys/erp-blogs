@@ -126,8 +126,13 @@ header {
 .post-card img { height: 174px; object-fit: cover; width: 100%; }
 .post-content { padding: 1.5rem; flex-grow: 1; display: flex; flex-direction: column; }
 .post-content h3 { font-size: 1.15rem; margin-bottom: 0.6rem; }
-.post-content h3 a { color: #222; transition: color 0.18s; text-decoration: none; }
-.post-content h3 a:hover { color: #fa5a47; }
+.post-content h3 .post-title-link {
+  color: #222;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color 0.18s;
+}
+.post-card:hover .post-content h3 .post-title-link { color: #fa5a47; }
 .post-content p { flex-grow: 1; font-size: 1.01rem; color: #47506b; margin-bottom: 1rem; }
 .post-meta { color: #a1a9bb; font-size: 0.95rem; margin-top: auto; }
 

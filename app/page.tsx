@@ -63,7 +63,7 @@ export default function HomePage() {
                   style={{ height: 174, objectFit: 'cover', width: '100%' }}
                 />
                 <div className="post-content">
-                  <h3>{title}</h3>
+                  <h3><span className="post-title-link">{title}</span></h3>
                   <p>{item.desc}</p>
                   <span className="post-meta">By Admin</span>
                 </div>
