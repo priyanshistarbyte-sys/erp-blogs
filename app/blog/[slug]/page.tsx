@@ -1,8 +1,10 @@
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
+import { Suspense } from 'react';
 import { getAllPosts, getPostByUrl } from '../../lib';
 import AdSlot from '../../components/AdSlot';
+import ReelsSection from '../../components/ReelsSection';
 import type { Metadata } from 'next';
 
 interface Props {
@@ -38,6 +40,9 @@ export default async function BlogPostPage({ params }: Props) {
 
   return (
     <>
+      <Suspense fallback={null}>
+        <ReelsSection />
+      </Suspense>
       <AdSlot slot="ad1" />
       <div className="blog-main-layout container" style={{ marginTop: '2rem' }}>
         <section className="blog-detail-content">

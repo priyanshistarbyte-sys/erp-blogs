@@ -1,7 +1,9 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import { Suspense } from 'react';
 import { getAllPosts } from './lib';
 import AdSlot from './components/AdSlot';
+import ReelsSection from './components/ReelsSection';
 
 const homePosts = [
   { url: 'how-to-find-the-best-18-wheeler-accident-attorney-for-your-case', category: 'Legal Services', desc: 'Injured in an 18-wheeler crash? Discover how to choose the best 18 wheeler accident attorney or law firm near you to max...' },
@@ -30,6 +32,9 @@ export default function HomePage() {
 
   return (
     <>
+      <Suspense fallback={null}>
+        <ReelsSection />
+      </Suspense>
       <AdSlot slot="ad1" />
       <section className="featured container">
         <Image
