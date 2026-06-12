@@ -43,7 +43,7 @@ export default async function BlogPostPage({ params }: Props) {
       <Suspense fallback={null}>
         <ReelsSection />
       </Suspense>
-      <AdSlot slot="ad1" />
+      {/* <AdSlot slot="ad1" /> */}
       <div className="blog-main-layout container" style={{ marginTop: '2rem' }}>
         <section className="blog-detail-content">
           <article className="blog-article">
@@ -62,7 +62,7 @@ export default async function BlogPostPage({ params }: Props) {
                 style={{ width: '100%', maxHeight: 370, objectFit: 'cover', borderRadius: 10 }}
               />
             </header>
-            <AdSlot slot="ad2" />
+            {/* <AdSlot slot="ad2" /> */}
             <div
               className="blog-content"
               dangerouslySetInnerHTML={{ __html: post.desc }}

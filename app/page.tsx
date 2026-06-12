@@ -1,9 +1,11 @@
+'use client';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Suspense } from 'react';
+import { Suspense, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { getAllPosts } from './lib';
 import AdSlot from './components/AdSlot';
-import ReelsSection from './components/ReelsSection';
+import ReelAdModal from './components/ReelAdModal';
 
 const homePosts = [
   { url: 'how-to-find-the-best-18-wheeler-accident-attorney-for-your-case', category: 'Legal Services', desc: 'Injured in an 18-wheeler crash? Discover how to choose the best 18 wheeler accident attorney or law firm near you to max...' },
@@ -29,13 +31,23 @@ const homePosts = [
 
 export default function HomePage() {
   const allPosts = getAllPosts();
+  const router = useRouter();
+  const [pendingUrl, setPendingUrl] = useState<string | null>(null);
+
+  function handleBlogClick(e: React.MouseEvent, url: string) {
+    e.preventDefault();
+    setPendingUrl(url);
+  }
+
+  function handleAdClose() {
+    if (pendingUrl) router.push(pendingUrl);
+    setPendingUrl(null);
+  }
 
   return (
     <>
-      <Suspense fallback={null}>
-        <ReelsSection />
-      </Suspense>
-      <AdSlot slot="ad1" />
+      {pendingUrl && <ReelAdModal onClose={handleAdClose} />}
+      {/* <AdSlot slot="ad1" /> */}
       <section className="featured container">
         <Image
           src="/blog_img/mastering-erp.webp"
@@ -51,14 +63,18 @@ export default function HomePage() {
         </div>
       </section>
 
-      <AdSlot slot="ad2" />
+      {/* <AdSlot slot="ad2" /> */}
       <section className="recent-posts container">
         {homePosts.map((item) => {
           const post = allPosts.find((p) => p.url === item.url);
           const title = post?.title ?? item.url;
           return (
-            <article key={item.url} className="post-card">
-              <Link href={`/blog/${item.url}`} style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', height: '100%' }}>
+            <article key={item.url} className={`post-card${pendingUrl ? ' blur-content' : ''}`}>
+              <a
+                href={`/blog/${item.url}`}
+                onClick={(e) => handleBlogClick(e, `/blog/${item.url}`)}
+                style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', height: '100%' }}
+              >
                 <span className="tag web">{item.category}</span>
                 <Image
                   src={`/blog_img/${item.url}.webp`}
@@ -72,7 +88,7 @@ export default function HomePage() {
                   <p>{item.desc}</p>
                   <span className="post-meta">By Admin</span>
                 </div>
-              </Link>
+              </a>
             </article>
           );
         })}

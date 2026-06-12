@@ -27,9 +27,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         <GptInit />
-        <Header />
-        <main>{children}</main>
-        <Footer />
+        <div id="page-content">
+          <Header />
+          <main>{children}</main>
+          <Footer />
+        </div>
       </body>
     </html>
   );
