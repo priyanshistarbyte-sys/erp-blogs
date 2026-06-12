@@ -54,14 +54,14 @@ export default function ReelAdModal({ onClose }: Props) {
             className="reel-ad-video"
           />
           {/* Top bar */}
-          <div className="reel-ad-top">
+          {/* <div className="reel-ad-top">
             <span className="reel-ad-badge">Ad</span>
             {canSkip ? (
               <button className="reel-ad-skip" onClick={onClose}>Skip Ad ⟶</button>
             ) : (
               <span className="reel-ad-countdown">Skip in {countdown}s</span>
             )}
-          </div>
+          </div> */}
           {/* Bottom user bar */}
           <div className="reel-ad-bottom">
             <div className="reel-ad-user">
