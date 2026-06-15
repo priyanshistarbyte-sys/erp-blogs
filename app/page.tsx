@@ -70,25 +70,31 @@ export default function HomePage() {
           const title = post?.title ?? item.url;
           return (
             <article key={item.url} className={`post-card${pendingUrl ? ' blur-content' : ''}`}>
-              <a
-                href={`/blog/${item.url}`}
-                onClick={(e) => handleBlogClick(e, `/blog/${item.url}`)}
-                style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', height: '100%' }}
-              >
+              <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                 <span className="tag web">{item.category}</span>
-                <Image
-                  src={`/blog_img/${item.url}.webp`}
-                  alt={`${title} Thumbnail`}
-                  width={400}
-                  height={174}
-                  style={{ height: 174, objectFit: 'cover', width: '100%' }}
-                />
+                <Link href={`/blog/${item.url}`}>
+                  <Image
+                    src={`/blog_img/${item.url}.webp`}
+                    alt={`${title} Thumbnail`}
+                    width={400}
+                    height={174}
+                    style={{ height: 174, objectFit: 'cover', width: '100%' }}
+                  />
+                </Link>
                 <div className="post-content">
-                  <h3><span className="post-title-link">{title}</span></h3>
+                  <h3>
+                    <a
+                      href={`/blog/${item.url}`}
+                      className="post-title-link"
+                      onClick={(e) => handleBlogClick(e, `/blog/${item.url}`)}
+                    >
+                      {title}
+                    </a>
+                  </h3>
                   <p>{item.desc}</p>
                   <span className="post-meta">By Admin</span>
                 </div>
-              </a>
+              </div>
             </article>
           );
         })}
