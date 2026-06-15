@@ -1,5 +1,6 @@
 'use client';
 import { useRef, useState, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { useSearchParams } from 'next/navigation';
 
 const REELS = [
@@ -52,13 +53,17 @@ export default function ReelsSection() {
     if (!open) return;
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
+    document.body.classList.add('reels-fs-open');
     const el = containerRef.current;
     if (el) {
       requestAnimationFrame(() => {
         el.scrollTop = openIdxRef.current * el.clientHeight;
       });
     }
-    return () => { document.body.style.overflow = prev; };
+    return () => {
+      document.body.style.overflow = prev;
+      document.body.classList.remove('reels-fs-open');
+    };
   }, [open]);
 
   const openReels = (idx = 0) => {
@@ -86,7 +91,7 @@ export default function ReelsSection() {
         </div>
       </div>
 
-      {open && (
+      {open && createPortal(
         <div className="reel-fs-backdrop">
           <button className="reel-fs-close" onClick={() => setOpen(false)}>✕</button>
           <div
@@ -98,7 +103,8 @@ export default function ReelsSection() {
               <ReelItem key={r.src} src={r.src} label={r.label} isActive={i === activeIdx} />
             ))}
           </div>
-        </div>
+        </div>,
+        document.body,
       )}
     </>
   );

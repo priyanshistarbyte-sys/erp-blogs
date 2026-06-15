@@ -258,8 +258,16 @@ footer {
 .privacy-policy-card a:hover { color: #fa5a47; }
 @media (max-width: 750px) { .privacy-policy-card { padding: 1.25rem 1vw; border-radius: 9px; max-width: 98vw; } .privacy-title { font-size: 1.32rem; } }
 
-/* Blur background when ad is open */
+/* Blur background when ad is open (desktop popup only) */
 #page-content.page-blurred { filter: blur(6px); pointer-events: none; user-select: none; }
+
+/* Hide page behind full-screen reels on mobile */
+@media (max-width: 750px) {
+  body.reels-fs-open #page-content,
+  body.reel-ad-open #page-content {
+    visibility: hidden;
+  }
+}
 
 /* Reel Ad Modal – popup style (like rewarded ad modal) */
 .reel-ad-backdrop {
@@ -285,6 +293,24 @@ footer {
 }
 
 .reel-ad-popup--dimmed { opacity: 0.35; pointer-events: none; }
+
+@media (max-width: 750px) {
+  .reel-ad-backdrop {
+    background: #000;
+    display: block;
+  }
+  .reel-ad-popup {
+    width: 100%;
+    height: 100dvh;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .reel-ad-close {
+    position: fixed;
+    top: 1rem;
+    right: 1.1rem;
+  }
+}
 
 /* Google GPT rewarded ad test modal (matches official example) */
 .rewarded-gpt-modal {
@@ -378,7 +404,8 @@ footer {
 }
 /* Full-screen vertical Instagram-style reel scroll */
 .reel-fs-backdrop {
-  position: fixed; inset: 0; z-index: 9999;
+  position: fixed; inset: 0; z-index: 10000;
+  width: 100vw; height: 100dvh;
   background: #000;
   overflow: hidden; overscroll-behavior: none;
 }

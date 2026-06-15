@@ -38,10 +38,16 @@ export default function ReelAdModal({ onClose }: Props) {
   useEffect(() => {
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
-    document.getElementById('page-content')?.classList.add('page-blurred');
+    document.body.classList.add('reel-ad-open');
+    const pageContent = document.getElementById('page-content');
+    const isMobile = window.matchMedia('(max-width: 750px)').matches;
+    if (!isMobile) {
+      pageContent?.classList.add('page-blurred');
+    }
     return () => {
       document.body.style.overflow = prev;
-      document.getElementById('page-content')?.classList.remove('page-blurred');
+      document.body.classList.remove('reel-ad-open');
+      pageContent?.classList.remove('page-blurred');
     };
   }, []);
 
