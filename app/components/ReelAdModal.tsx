@@ -186,10 +186,10 @@ export default function ReelAdModal({ onClose }: Props) {
             <div key={`${phase}-${src}`} className="reel-snap-slide" data-index={i}>
               <video src={src} playsInline loop muted className="reel-ad-video" />
 
-              <div className="reel-ad-top">
+              {/* <div className="reel-ad-top">
                 <span className="reel-ad-badge">Ad</span>
                 <span className="reel-ad-countdown">{slideLabel}</span>
-              </div>
+              </div> */}
 
               <div className="reel-ad-bottom">
                 <div className="reel-ad-user">
