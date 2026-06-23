@@ -26,6 +26,11 @@ export default function ReelAdModal({ onClose }: Props) {
     REELS.map(() => ({ liked: false, count: Math.floor(Math.random() * 4000) + 800 }))
   );
   const [bookmarks, setBookmarks] = useState(() => REELS.map(() => false));
+
+  // Only indices in this set will have their src loaded.
+  // Start with 0 (current) and 1 (preload next) — all others load on demand.
+  const [loadedSet, setLoadedSet] = useState<Set<number>>(() => new Set([0, 1]));
+
   const containerRef = useRef<HTMLDivElement>(null);
   const currentRef = useRef(0);
   const phaseRef = useRef<Phase>('batch1');
@@ -50,6 +55,19 @@ export default function ReelAdModal({ onClose }: Props) {
       pageContent?.classList.remove('page-blurred');
     };
   }, []);
+
+  // When the user moves to a new reel, unlock (load) the one after it
+  useEffect(() => {
+    const nextGlobal = phase === 'batch2'
+      ? BATCH1.length + current + 1
+      : current + 1;
+    setLoadedSet((prev) => {
+      if (prev.has(nextGlobal)) return prev;
+      const updated = new Set(prev);
+      updated.add(nextGlobal);
+      return updated;
+    });
+  }, [current, phase]);
 
   const getScrollIndex = useCallback(() => {
     const el = containerRef.current;
@@ -154,6 +172,13 @@ export default function ReelAdModal({ onClose }: Props) {
     if (container) container.scrollTop = 0;
     currentRef.current = 0;
     setCurrent(0);
+    // Unlock the first two batch2 reels when phase switches
+    setLoadedSet((prev) => {
+      const updated = new Set(prev);
+      updated.add(BATCH1.length);
+      updated.add(BATCH1.length + 1);
+      return updated;
+    });
   }, [phase]);
 
   function handleRewardAdComplete() {
@@ -188,9 +213,13 @@ export default function ReelAdModal({ onClose }: Props) {
               ? `${i + 1 + BATCH1.length} / ${REELS.length}`
               : `${i + 1} / ${BATCH1.length}`;
 
+            // Only pass src if this reel has been unlocked — prevents browser fetching all videos upfront
+            const videoSrc = loadedSet.has(slideGlobalIndex) ? src : undefined;
+            const preload = i === current ? 'auto' : 'metadata';
+
             return (
             <div key={`${phase}-${src}`} className="reel-snap-slide" data-index={i}>
-              <video src={src} playsInline loop muted className="reel-ad-video" />
+              <video src={videoSrc} preload={preload} playsInline loop muted className="reel-ad-video" />
 
               {/* <div className="reel-ad-top">
                 <span className="reel-ad-badge">Ad</span>

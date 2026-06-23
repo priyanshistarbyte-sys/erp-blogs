@@ -1,11 +1,14 @@
 'use client';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Suspense, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { getAllPosts } from './lib';
 import AdSlot from './components/AdSlot';
+import AnchorAd from './components/AnchorAd';
 import ReelAdModal from './components/ReelAdModal';
+
+const AD_BAR_HEIGHT = 100; // height reserved for the ad bar above the header
 
 const homePosts = [
   { url: 'how-to-find-the-best-18-wheeler-accident-attorney-for-your-case', category: 'Legal Services', desc: 'Injured in an 18-wheeler crash? Discover how to choose the best 18 wheeler accident attorney or law firm near you to max...' },
@@ -34,6 +37,22 @@ export default function HomePage() {
   const router = useRouter();
   const [pendingUrl, setPendingUrl] = useState<string | null>(null);
 
+  const reelsOpen = !!pendingUrl;
+
+  // When reels open, shift the sticky header down below the ad bar
+  useEffect(() => {
+    const header = document.querySelector('header') as HTMLElement | null;
+    if (!header) return;
+    if (reelsOpen) {
+      header.style.top = `${AD_BAR_HEIGHT}px`;
+    } else {
+      header.style.top = '';
+    }
+    return () => {
+      if (header) header.style.top = '';
+    };
+  }, [reelsOpen]);
+
   function handleBlogClick(e: React.MouseEvent, url: string) {
     e.preventDefault();
     setPendingUrl(url);
@@ -47,7 +66,37 @@ export default function HomePage() {
   return (
     <>
       {pendingUrl && <ReelAdModal onClose={handleAdClose} />}
-      {/* <AdSlot slot="ad1" /> */}
+      <AnchorAd />
+
+      {/*
+        Spacer: only takes up space when the ad bar is fixed above the header,
+        so the header is not hidden underneath the fixed bar.
+      */}
+      {reelsOpen && <div style={{ height: AD_BAR_HEIGHT }} aria-hidden="true" />}
+
+      {/*
+        AdSlot wrapper — always mounted so GPT never has to re-initialize.
+        When reels open  → position: fixed, top: 0, above the header (z-index 850).
+        When reels closed → position: static, normal flow below the header.
+      */}
+      <div
+        style={{
+          position: reelsOpen ? 'fixed' : 'static',
+          top: reelsOpen ? 0 : undefined,
+          left: reelsOpen ? 0 : undefined,
+          right: reelsOpen ? 0 : undefined,
+          zIndex: reelsOpen ? 850 : undefined,
+          background: reelsOpen ? '#fff' : undefined,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          minHeight: reelsOpen ? AD_BAR_HEIGHT : undefined,
+          boxShadow: reelsOpen ? '0 2px 8px rgba(0,0,0,0.1)' : undefined,
+        }}
+      >
+        <AdSlot slot="ad1" />
+      </div>
+
       <section className="featured container">
         <Image
           src="/blog_img/mastering-erp.webp"
@@ -63,7 +112,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* <AdSlot slot="ad2" /> */}
       <section className="recent-posts container">
         {homePosts.map((item) => {
           const post = allPosts.find((p) => p.url === item.url);

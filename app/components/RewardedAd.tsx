@@ -1,7 +1,6 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
-
-const REWARDED_AD_UNIT = '/22639388115/rewarded_web_example';
+import { REWARDED_AD } from './adConfig';
 
 declare global {
   interface Window {
@@ -15,7 +14,7 @@ interface RewardPayload {
   type: string;
 }
 
-type ModalType = 'reward' | 'grant' | 'loading' | '';
+type ModalType = 'grant' | 'loading' | '';
 
 interface Props {
   active: boolean;
@@ -41,6 +40,12 @@ export default function RewardedAd({ active, preload = false, onComplete }: Prop
     setModalMessage(message);
   }
 
+  function showRewardedAd() {
+    if (!readyEventRef.current) return;
+    readyEventRef.current.makeRewardedVisible();
+    displayModal();
+  }
+
   function finishFlow() {
     displayModal();
     if (slotRef.current) {
@@ -51,7 +56,6 @@ export default function RewardedAd({ active, preload = false, onComplete }: Prop
     onCompleteRef.current();
   }
 
-  // Init GPT slot once when reel modal opens (preload while reels 1–3 play)
   useEffect(() => {
     if (!preload || slotInitializedRef.current) return;
 
@@ -61,7 +65,7 @@ export default function RewardedAd({ active, preload = false, onComplete }: Prop
       if (slotInitializedRef.current) return;
 
       const rewardedSlot = window.googletag.defineOutOfPageSlot(
-        REWARDED_AD_UNIT,
+        REWARDED_AD.adUnit,
         window.googletag.enums.OutOfPageFormat.REWARDED,
       );
 
@@ -76,9 +80,7 @@ export default function RewardedAd({ active, preload = false, onComplete }: Prop
       pubads.addEventListener('rewardedSlotReady', (event: { makeRewardedVisible: () => void }) => {
         readyEventRef.current = event;
         setAdReady(true);
-        if (activeRef.current) {
-          displayModal('reward', 'Watch an ad to receive a special reward?');
-        }
+        if (activeRef.current) showRewardedAd();
       });
 
       pubads.addEventListener('rewardedSlotGranted', (event: { payload: RewardPayload }) => {
@@ -107,7 +109,6 @@ export default function RewardedAd({ active, preload = false, onComplete }: Prop
     });
   }, [preload, active]);
 
-  // Cleanup slot only when component unmounts
   useEffect(() => {
     return () => {
       if (slotRef.current && window.googletag?.destroySlots) {
@@ -120,35 +121,14 @@ export default function RewardedAd({ active, preload = false, onComplete }: Prop
     };
   }, []);
 
-  // Show modal as soon as rewarded phase starts
   useEffect(() => {
-    if (!active) {
-      displayModal();
-      return;
-    }
+    if (!active) { displayModal(); return; }
     rewardPayloadRef.current = null;
-    if (adReady) {
-      displayModal('reward', 'Watch an ad to receive a special reward?');
-    } else {
-      displayModal('loading', 'Loading rewarded ad…');
-    }
+    if (adReady) showRewardedAd();
+    else displayModal('loading', 'Loading rewarded ad…');
   }, [active, adReady]);
 
-  if (!active) return null;
-
-  function watchAd() {
-    if (!adReady) return;
-    readyEventRef.current?.makeRewardedVisible();
-    displayModal();
-  }
-
-  function continueAfterGrant() {
-    finishFlow();
-  }
-
-  function skipReward() {
-    finishFlow();
-  }
+  if (!active || !modalType) return null;
 
   return (
     <div id="modal" className="rewarded-gpt-modal" data-type={modalType || undefined}>
@@ -157,18 +137,12 @@ export default function RewardedAd({ active, preload = false, onComplete }: Prop
         {modalType === 'loading' && (
           <div className="rewarded-ad-buttons rewarded-ad-buttons--reward">
             <input type="button" value="Loading…" disabled />
-            <input type="button" className="rewarded-ad-skip-btn" value="Skip" onClick={skipReward} />
-          </div>
-        )}
-        {modalType === 'reward' && (
-          <div className="rewardButtons">
-            <input type="button" id="watchAdButton" value="Watch Ad" onClick={watchAd} />
-            <input type="button" className="rewarded-ad-skip-btn" value="Skip" onClick={skipReward} />
+            <input type="button" className="rewarded-ad-skip-btn" value="Skip" onClick={finishFlow} />
           </div>
         )}
         {modalType === 'grant' && (
           <div className="grantButtons">
-            <input type="button" value="Continue" onClick={continueAfterGrant} />
+            <input type="button" value="Continue" onClick={finishFlow} />
           </div>
         )}
       </div>

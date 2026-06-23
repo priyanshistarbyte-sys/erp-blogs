@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { Suspense } from 'react';
 import { getAllPosts, getPostByUrl } from '../../lib';
 import AdSlot from '../../components/AdSlot';
-import ReelsSection from '../../components/ReelsSection';
 import type { Metadata } from 'next';
 
 interface Props {
@@ -30,7 +29,6 @@ export default async function BlogPostPage({ params }: Props) {
 
   const allPosts = getAllPosts();
   const others = allPosts.filter((p) => p.url !== slug);
-  // deterministic "random" selection using slug hash
   const seed = slug.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
   const related = [...others].sort((a, b) => {
     const ha = (seed * a.url.length) % 997;
@@ -40,10 +38,12 @@ export default async function BlogPostPage({ params }: Props) {
 
   return (
     <>
-      <Suspense fallback={null}>
+      {/* <Suspense fallback={null}>
         <ReelsSection />
-      </Suspense>
-      {/* <AdSlot slot="ad1" /> */}
+      </Suspense> */}
+
+      <AdSlot slot="ad1" />
+
       <div className="blog-main-layout container" style={{ marginTop: '2rem' }}>
         <section className="blog-detail-content">
           <article className="blog-article">
@@ -62,14 +62,13 @@ export default async function BlogPostPage({ params }: Props) {
                 style={{ width: '100%', maxHeight: 370, objectFit: 'cover', borderRadius: 10 }}
               />
             </header>
-            {/* <AdSlot slot="ad2" /> */}
+            <AdSlot slot="ad2" />
             <div
               className="blog-content"
               dangerouslySetInnerHTML={{ __html: post.desc }}
             />
           </article>
 
-          {/* Comments section */}
           <section className="blog-comments">
             <h2 className="comments-title">Comments <span className="comments-count">(3)</span></h2>
             <form className="comment-form">
@@ -98,7 +97,6 @@ export default async function BlogPostPage({ params }: Props) {
           </section>
         </section>
 
-        {/* Related blogs sidebar */}
         <aside className="related-blogs">
           <h2 className="related-title">Related Blogs</h2>
           <div className="related-list" style={{ flexDirection: 'column' }}>

@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useRef } from 'react';
+import { DISPLAY_ADS, type DisplayAdSlot } from './adConfig';
 
 declare global {
   interface Window {
@@ -8,25 +9,12 @@ declare global {
   }
 }
 
-const AD_CONFIG = {
-  ad1: {
-    adUnit: '/23324356353/hr1',
-    divId: 'div-gpt-ad-1749819118863-0',
-    sizes: [[300, 250], [336, 280], [300, 600], [320, 480], [250, 250]],
-  },
-  ad2: {
-    adUnit: '/23324356353/hr2',
-    divId: 'div-gpt-ad-1749819118864-0',
-    sizes: [[300, 250], [336, 280], [300, 600], [320, 480], [250, 250]],
-  },
-} as const;
-
 interface AdSlotProps {
-  slot: 'ad1' | 'ad2';
+  slot: DisplayAdSlot;
 }
 
 export default function AdSlot({ slot }: AdSlotProps) {
-  const { adUnit, divId, sizes } = AD_CONFIG[slot];
+  const { adUnit, divId, sizes } = DISPLAY_ADS[slot];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const gptSlotRef = useRef<any>(null);
 
